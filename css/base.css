@@ -3,17 +3,17 @@
    ========================================= */
 
 :root {
-  /* Color Palette */
-  --clr-bg: #0F172A;            /* Background */
-  --clr-surface-alt: #080D17;   /* Secondary Background (Darker for contrast) */
-  --clr-surface: #1E293B;       /* Surface/Card */
-  --clr-primary: #3B82F6;       /* Metallic Blue */
-  --clr-accent: #60A5FA;        /* Accent Blue */
-  --clr-steel: #1F4E79;         /* Steel Blue */
-  --clr-text: #F8FAFC;          /* White (Headings) */
-  --clr-body-text: #E2E8F0;     /* Body Text */
-  --clr-muted: #94A3B8;         /* Muted Text */
-  --clr-border: #334155;        /* Borders */
+  /* Color Palette - Subtle Dark Corporate */
+  --clr-bg: #0B1121;            /* Rich Deep Slate */
+  --clr-surface-alt: #131B2F;   /* Softly Elevated Section Background */
+  --clr-surface: #1E293B;       /* Card Surface */
+  --clr-primary: #3B82F6;       /* Clean Metallic Blue */
+  --clr-accent: #60A5FA;        /* Bright Accent Blue */
+  --clr-steel: #1F4E79;         /* Smooth Gradient Blue */
+  --clr-text: #F8FAFC;          /* Soft White (Headings) */
+  --clr-body-text: #CBD5E1;     /* Readable Light Slate */
+  --clr-muted: #94A3B8;         /* Subdued Slate */
+  --clr-border: #334155;        /* Soft Structure Borders */
 
   /* Typography */
   --font-heading: 'Playfair Display', serif;

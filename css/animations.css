@@ -18,3 +18,8 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+@keyframes pulse-glow {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+  100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+}

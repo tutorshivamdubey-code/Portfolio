@@ -253,21 +253,7 @@
         </div>
         <div class="carousel-wrapper animate-up">
           <div class="carousel-track" id="testimonialsGrid">
-            <div class="card card--testimonial">
-              <div class="stars"><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i></div>
-              <p class="quote" data-editable="testQuote1">"My son used to struggle badly in Maths. After joining Shivam Sir's tuition, his confidence has improved so much. He now solves problems on his own!"</p>
-              <p class="author" data-editable="testAuthor1">— Jyoti Jaiswal, Parent · Class 10 & 8 (Maths)</p>
-            </div>
-            <div class="card card--testimonial">
-              <div class="stars"><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i></div>
-              <p class="quote" data-editable="testQuote2">"Very patient teacher. Explains every concept clearly and makes sure the child understands before moving on. Highly recommended for home tuition."</p>
-              <p class="author" data-editable="testAuthor2">— Anant Yadav, Parent · Class 10 (Maths)</p>
-            </div>
-            <div class="card card--testimonial">
-              <div class="stars"><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i><i data-lucide="star" class="star-filled"></i></div>
-              <p class="quote" data-editable="testQuote3">"Shivam Sir's Psychology classes are excellent. My daughter scored 88 in her boards. His notes and real-life examples made the subject very easy to understand."</p>
-              <p class="author" data-editable="testAuthor3">— Ramesh Ojha, Parent · Class 12 (Psychology)</p>
-            </div>
+            <!-- Dynamic testimonials from the database will be injected here via main.js -->
           </div>
           <div class="carousel-controls">
             <button class="carousel-btn" id="carouselPrev" aria-label="Previous Testimonials">←</button>
@@ -405,47 +391,47 @@
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <div class="footer__grid">
-        <div class="footer__col">
-          <p class="footer__logo">Shivam Dubey</p>
-          <p class="footer__text">A dedicated home educator specialising in Mathematics and Psychology. Building strong conceptual foundations and nurturing mental well-being for over 7 years.</p>
-        </div>
-        <div class="footer__col">
-          <h4 class="footer__heading">Quick Links</h4>
-          <ul class="footer__links">
-            <li><a href="#hero">About Me</a></li>
-            <li><a href="#subjects">Subjects</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4 class="footer__heading">Contact</h4>
-          <ul class="footer__links">
-            <li><i data-lucide="map-pin" class="icon-sm"></i> Lucknow, UP, India</li>
-            <li><a href="mailto:contact@example.com"><i data-lucide="mail" class="icon-sm"></i> contact@example.com</a></li>
-            <li><a href="tel:+919876543210"><i data-lucide="phone" class="icon-sm"></i> +91 98765 43210</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4 class="footer__heading">Socials</h4>
-          <div class="footer__socials">
-            <a href="#" class="social-link" data-editable="socialLinkedinText" data-editable-link="socialLinkedinLink" style="position: relative;"><i data-lucide="linkedin" class="icon-sm"></i> LinkedIn</a>
-            <a href="#" class="social-link" data-editable="socialInstagramText" data-editable-link="socialInstagramLink" style="position: relative;"><i data-lucide="instagram" class="icon-sm"></i> Instagram</a>
+      <div class="container">
+        <div class="footer__grid">
+          <div class="footer__col">
+            <p class="footer__logo" data-editable="footerLogo">Shivam Dubey</p>
+            <p class="footer__text" data-editable="footerBio">A dedicated home educator specialising in Mathematics and Psychology. Building strong conceptual foundations and nurturing mental well-being for over 7 years.</p>
           </div>
-          <h4 class="footer__heading" style="margin-top: 24px;">Scan & Share</h4>
-          <div style="background: #FFFFFF; padding: 8px; border-radius: 8px; display: inline-block; width: fit-content;">
-            <img src="assets/images/qr_code.png" alt="QR Code for Portfolio" style="width: 80px; height: 80px; display: block;">
+          <div class="footer__col">
+            <h4 class="footer__heading" data-editable="footerQuickLinksTitle">Quick Links</h4>
+            <ul class="footer__links">
+              <li><a href="#hero" data-editable="footerLink1">About Me</a></li>
+              <li><a href="#subjects" data-editable="footerLink2">Subjects</a></li>
+              <li><a href="#experience" data-editable="footerLink3">Experience</a></li>
+              <li><a href="#contact" data-editable="footerLink4">Contact</a></li>
+            </ul>
           </div>
+          <div class="footer__col">
+            <h4 class="footer__heading" data-editable="footerContactTitle">Contact</h4>
+            <ul class="footer__links">
+              <li data-editable="footerContactLocation"><i data-lucide="map-pin" class="icon-sm"></i> Lucknow, UP, India</li>
+              <li data-editable="footerContactEmail"><i data-lucide="mail" class="icon-sm"></i> contact@example.com</li>
+              <li data-editable="footerContactPhone"><i data-lucide="phone" class="icon-sm"></i> +91 98765 43210</li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__heading" data-editable="footerSocialsTitle">Socials</h4>
+            <div class="footer__socials">
+              <a href="#" class="social-link" data-editable="socialLinkedinText" data-editable-link="socialLinkedinLink" style="position: relative;"><i data-lucide="linkedin" class="icon-sm"></i> LinkedIn</a>
+              <a href="#" class="social-link" data-editable="socialInstagramText" data-editable-link="socialInstagramLink" style="position: relative;"><i data-lucide="instagram" class="icon-sm"></i> Instagram</a>
+            </div>
+            <h4 class="footer__heading" data-editable="footerScanTitle" style="margin-top: 24px;">Scan & Share</h4>
+            <div style="background: #FFFFFF; padding: 8px; border-radius: 8px; display: inline-block; width: fit-content;">
+              <img src="assets/images/qr_code.png" alt="QR Code for Portfolio" style="width: 80px; height: 80px; display: block;">
+            </div>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <p class="footer__text">&copy; <span id="currentYear">2026</span> <span data-editable="footerCopyrightText">Shivam Dubey. All rights reserved.</span></p>
+          <p class="footer__text"><a href="#" id="adminLoginLink" style="opacity: 0.5;">Admin Login</a></p>
         </div>
       </div>
-      <div class="footer__bottom">
-        <p class="footer__text">© <span id="currentYear">2026</span> Shivam Dubey. All rights reserved.</p>
-        <p class="footer__text"><a href="#" id="adminLoginLink" style="opacity: 0.5;">Admin Login</a></p>
-      </div>
-    </div>
-  </footer>
+    </footer>
 
   <!-- Admin Mode Trigger -->
   <button id="adminTrigger" class="admin-trigger" aria-label="Enable Admin Mode" title="Admin Login"></button>
