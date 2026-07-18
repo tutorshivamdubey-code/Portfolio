@@ -8,7 +8,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600;1,700&family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- CSS -->
   <link rel="stylesheet" href="css/base.css">
@@ -28,13 +28,13 @@
         <img src="assets/images/logo.png" alt="Logo" class="navbar__logo-img">
         Shivam Dubey
       </a>
-      <ul class="navbar__menu">
+      <ul class="navbar__menu" style="margin-left: auto; align-items: center;">
         <li><a href="#hero" class="navbar__link">About</a></li>
         <li><a href="#subjects" class="navbar__link">Subjects</a></li>
         <li><a href="#experience" class="navbar__link">Experience</a></li>
         <li><a href="#contact" class="navbar__link">Contact</a></li>
       </ul>
-      <div style="display: flex; align-items: center; gap: 16px; margin-left: auto;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-left: 32px;" class="navbar__actions">
         <button id="themeToggleBtn" style="background: transparent; border: 1px solid var(--clr-border); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; color: var(--clr-text); display: flex; align-items: center; justify-content: center; transition: background 0.2s;" aria-label="Toggle Theme">
           <i data-lucide="sun"></i>
         </button>
@@ -358,7 +358,7 @@
             </div>
             <div class="form-group">
               <label for="grade" data-editable="feedbackGradeLabel">Grade / Class</label>
-              <select id="grade" class="form-input" required>
+              <select id="grade" class="form-input" data-editable="feedbackGradeSelect" required>
                 <option value="" disabled selected>Select Class</option>
                 <option value="Class 6">Class 6</option>
                 <option value="Class 7">Class 7</option>
@@ -371,7 +371,7 @@
             </div>
             <div class="form-group">
               <label for="subject" data-editable="feedbackSubjectLabel">Subject</label>
-              <select id="subject" class="form-input" required>
+              <select id="subject" class="form-input" data-editable="feedbackSubjectSelect" required>
                 <option value="" disabled selected>Select Subject</option>
                 <option value="Mathematics">Mathematics</option>
                 <option value="Psychology">Psychology</option>
@@ -487,7 +487,7 @@
               <a href="#" class="social-link" data-editable="socialInstagramText" data-editable-link="socialInstagramLink" style="position: relative;"><i data-lucide="instagram" class="icon-sm"></i> Instagram</a>
             </div>
             <h4 class="footer__heading" data-editable="footerScanTitle" style="margin-top: 24px;">Scan & Share</h4>
-            <div style="background: #FFFFFF; padding: 8px; border-radius: 8px; display: inline-block; width: fit-content;">
+            <div class="qr-code-wrapper" style="background: #FFFFFF; padding: 8px; border-radius: 8px; display: inline-block; width: fit-content;">
               <img src="assets/images/qr_code.png" alt="QR Code for Portfolio" class="qr-code-img" style="width: 120px; height: 120px; display: block;">
             </div>
           </div>
@@ -542,38 +542,26 @@
         </select>
       </div>
     </div>
+    <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
+      <span>Font Family</span>
+      <select id="usiFontFamily" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:2px; height:26px; border-radius:4px; font-size:0.7rem;">
+        <option value="">Default</option>
+        <option value="'Inter', sans-serif">Inter (Modern)</option>
+        <option value="'Playfair Display', serif">Playfair (Elegant)</option>
+        <option value="'Outfit', sans-serif">Outfit (Geometric)</option>
+        <option value="'JetBrains Mono', monospace">JetBrains (Tech)</option>
+        <option value="'Comic Sans MS', cursive">Comic Sans (Playful)</option>
+      </select>
+    </div>
     
     <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-      <span>Font Size <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 1.2rem or 16px)</span></span>
-      <input type="text" id="usiFontSize" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-    </div>
-    <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-      <span>Line Height <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 1.5 or 24px)</span></span>
-      <input type="text" id="usiLineHeight" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-    </div>
-    <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-      <span>Padding (Button Size) <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 10px 20px)</span></span>
-      <input type="text" id="usiPadding" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-    </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-      <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-        <span>Width <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 100%, 300px)</span></span>
-        <input type="text" id="usiWidth" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-      </div>
-      <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-        <span>Height <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. auto, 300px)</span></span>
-        <input type="text" id="usiHeight" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-      </div>
-    </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-      <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-        <span>Left (X) <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 50px)</span></span>
-        <input type="text" id="usiLeft" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-      </div>
-      <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--clr-text);">
-        <span>Top (Y) <span style="color:var(--clr-muted); font-size:0.6rem;">(e.g. 100px)</span></span>
-        <input type="text" id="usiTop" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:4px; border-radius:4px;">
-      </div>
+      <span>Font Size</span>
+      <select id="usiFontSize" style="background:var(--clr-bg); color:var(--clr-text); border:1px solid var(--clr-border); padding:2px; height:26px; border-radius:4px; font-size:0.7rem;">
+        <option value="">Default</option>
+        <option value="0.875rem">Small</option>
+        <option value="1rem">Medium</option>
+        <option value="1.5rem">Large</option>
+      </select>
     </div>
   </div>
 
@@ -583,8 +571,7 @@
   <!-- Admin Controls (Hidden by default) -->
   <div id="adminPanel" class="admin-panel">
     <p class="admin-panel__title">Admin Mode Active</p>
-    <button id="adminToggleEdit" class="btn btn--secondary btn--small">Enable Text Editor</button>
-    <button id="adminToggleStyle" class="btn btn--secondary btn--small">Enable Style Editor</button>
+    <button id="adminToggleVisual" class="btn btn--secondary btn--small">Enable Visual Editor</button>
     <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
       <span style="font-size:0.8rem; color:var(--clr-muted);">Desktop</span>
       <label style="position:relative; display:inline-block; width:40px; height:20px;">
@@ -622,8 +609,7 @@
       <p style="font-size: 0.75rem; color: var(--clr-muted); margin-top: 8px; line-height: 1.3;">Hover over sections and click to set specific background colors.</p>
     </div>
 
-    <button id="adminSaveContent" class="btn btn--primary btn--small" style="display:none; margin-top: 10px;">Save Text</button>
-    <button id="adminSaveStyles" class="btn btn--primary btn--small" style="display:none; margin-top: 10px;">Save Styles</button>
+    <button id="adminSaveChanges" class="btn btn--primary btn--small" style="display:none; margin-top: 10px;">Save Changes</button>
     
     <button id="adminUpdatePwdBtn" class="btn btn--secondary btn--small" style="margin-top: 10px;">Update Password</button>
     <button id="adminExit" class="btn btn--secondary btn--small">Exit</button>

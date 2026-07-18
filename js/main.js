@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.applyTheme = function(theme) {
     currentTheme = theme;
     localStorage.setItem('user-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
     if (themeToggleBtn) {
       themeToggleBtn.innerHTML = theme === 'light' ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
       if (window.lucide) {
@@ -123,7 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function highlightStars(count) {
     stars.forEach((s, i) => {
-      s.style.color = (i < count) ? 'var(--clr-accent)' : 'var(--clr-border)';
+      s.style.color = (i < count) ? 'var(--clr-accent)' : 'var(--clr-muted)';
+      const svg = s.querySelector('svg');
+      if (svg) {
+        svg.style.fill = (i < count) ? 'currentColor' : 'transparent';
+      }
     });
   }
 
@@ -154,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(testimonialData)
         });
         injectTestimonial(testimonialData);
+        if (window.initTestimonialsViewMore) window.initTestimonialsViewMore();
         document.getElementById('feedbackSuccess').style.display = 'block';
         feedbackForm.reset();
         currentRating = 0;
@@ -495,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
      ADMIN MODE LOGIC
      ========================================= */
   let isAdmin = sessionStorage.getItem('isAdminActive') === 'true'; // Using session storage for login state
-  let isEditingText = false;
+  let isEditingMode = false;
 
   const adminLoginLink = document.getElementById('adminLoginLink');
   const adminLoginModal = document.getElementById('adminLoginModal');
@@ -504,8 +510,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminCancelBtn = document.getElementById('adminCancelBtn');
   const adminPanel = document.getElementById('adminPanel');
   const adminExit = document.getElementById('adminExit');
-  const adminToggleEdit = document.getElementById('adminToggleEdit');
-  const adminSaveContent = document.getElementById('adminSaveContent');
+  const adminToggleVisual = document.getElementById('adminToggleVisual');
+  const adminSaveChanges = document.getElementById('adminSaveChanges');
   const heroPortrait = document.getElementById('heroPortrait');
   const adminPhotoEdit = document.getElementById('adminPhotoEdit');
   const galleryUpload = document.getElementById('galleryUpload');
@@ -515,8 +521,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAdmin) enableAdminMode();
   });
 
+  const adminTrigger = document.getElementById('adminTrigger');
+
   if (adminLoginLink) {
     adminLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!isAdmin) adminLoginModal.showModal();
+    });
+  }
+
+  if (adminTrigger) {
+    adminTrigger.addEventListener('click', (e) => {
       e.preventDefault();
       if (!isAdmin) adminLoginModal.showModal();
     });
@@ -558,11 +573,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (adminExit) {
     adminExit.addEventListener('click', () => {
+      if (isEditingMode) toggleVisualEditor();
       isAdmin = false;
       sessionStorage.setItem('isAdminActive', 'false');
       sessionStorage.removeItem('adminToken');
       disableAdminMode();
-      if (isEditingText) toggleTextEditor();
     });
   }
 
@@ -652,15 +667,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  if (adminToggleEdit) adminToggleEdit.addEventListener('click', toggleTextEditor);
-  if (adminSaveContent) adminSaveContent.addEventListener('click', saveCustomContent);
+  if (adminToggleVisual) adminToggleVisual.addEventListener('click', toggleVisualEditor);
 
   const textFormatToolbar = document.getElementById('textFormatToolbar');
   const textColorPicker = document.getElementById('textColorPicker');
   const adminAddSection = document.getElementById('adminAddSection');
 
   window.applyAdminUI = function() {
-    if (!isEditingText) return;
+    if (!isEditingMode) return;
     
     // Inject Delete UI and Builder Toolbar for sections
     document.querySelectorAll('section').forEach(sec => {
@@ -692,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                let startX, startY, initialX, initialY;
                
                el.addEventListener('mousedown', (e) => {
-                 if (!isEditingText) return;
+                 if (!isEditingMode) return;
                  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
                  if (e.target.closest('.admin-img-upload-btn') || e.target.closest('button')) return;
 
@@ -716,15 +730,15 @@ document.addEventListener('DOMContentLoaded', () => {
                  e.preventDefault(); // Prevent text selection while dragging
                });
                
-               document.addEventListener('mousemove', (e) => {
-                 if (!isDragging || !isEditingText) return;
+               function onMouseMove(e) {
+                if (!isDragging || !isEditingMode) return;
                  const dx = e.clientX - startX;
                  const dy = e.clientY - startY;
                  el.style.left = (initialX + dx) + 'px';
                  el.style.top = (initialY + dy) + 'px';
-               });
+               }
                
-               document.addEventListener('mouseup', () => {
+               function onMouseUp() {
                  if (isDragging) {
                    isDragging = false;
                    el.style.zIndex = '';
@@ -752,7 +766,10 @@ document.addEventListener('DOMContentLoaded', () => {
                      }
                    }
                  }
-               });
+               }
+
+               document.addEventListener('mousemove', onMouseMove);
+               document.addEventListener('mouseup', onMouseUp);
              };
            }
            
@@ -978,37 +995,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  function toggleTextEditor() {
-    isEditingText = !isEditingText;
+  function toggleVisualEditor() {
+    isEditingMode = !isEditingMode;
     const editables = document.querySelectorAll('[data-editable]');
-    if (isEditingText) {
-      adminToggleEdit.textContent = 'Cancel Editing';
-      adminSaveContent.style.display = 'inline-block';
+    
+    if (isEditingMode) {
+      adminToggleVisual.textContent = 'Cancel Editing';
+      adminSaveChanges.style.display = 'inline-block';
+      
+      // Text logic
       if (adminAddSection) adminAddSection.style.display = 'block';
-      editables.forEach(el => el.setAttribute('contenteditable', 'true'));
+      editables.forEach(el => {
+        if (el.tagName !== 'SELECT') el.setAttribute('contenteditable', 'true');
+      });
       toggleLinkEditors(true);
       document.addEventListener('selectionchange', handleTextSelection);
-      
       window.applyAdminUI();
       
+      // Style logic
+      adminStyleEditor.style.display = 'flex';
+      document.body.classList.add('style-editor-active');
+      initStylePickers();
+      
     } else {
-      adminToggleEdit.textContent = 'Enable Text Editor';
-      adminSaveContent.style.display = 'none';
+      adminToggleVisual.textContent = 'Enable Visual Editor';
+      adminSaveChanges.style.display = 'none';
+      
+      // Text logic
       if (adminAddSection) adminAddSection.style.display = 'none';
-      editables.forEach(el => el.removeAttribute('contenteditable'));
+      editables.forEach(el => {
+        if (el.tagName !== 'SELECT') el.removeAttribute('contenteditable');
+      });
       toggleLinkEditors(false);
       document.removeEventListener('selectionchange', handleTextSelection);
       if(textFormatToolbar) textFormatToolbar.style.display = 'none';
-      
-      // Hide section delete buttons and mobile guides
       document.querySelectorAll('.admin-section-del, .hardcoded-section-del, .admin-section-builder, .admin-img-upload-btn, .admin-mobile-guide').forEach(btn => btn.style.display = 'none');
       
-      loadDataFromBackend(); // Revert unsaved
+      // Style logic
+      adminStyleEditor.style.display = 'none';
+      document.body.classList.remove('style-editor-active');
+      if(universalStyleInspector) universalStyleInspector.style.display = 'none';
+      if(adminHighlightBox) adminHighlightBox.style.display = 'none';
+      inspectorFrozen = false;
+      currentStyleTarget = null;
+      
+      loadDataFromBackend(); // Revert unsaved text and styles
     }
   }
 
   function handleTextSelection() {
-    if (!isEditingText || !textFormatToolbar) return;
+    if (!isEditingMode || !textFormatToolbar) return;
     
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
@@ -1049,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function saveCustomContent() {
+  async function saveChanges() {
     const editables = document.querySelectorAll('[data-editable]');
     const contentData = {};
     
@@ -1060,6 +1096,9 @@ document.addEventListener('DOMContentLoaded', () => {
       contentData[el.getAttribute('data-editable')] = el.innerHTML;
     });
     
+    // Include custom styles in the save payload
+    contentData.global_custom_css = customCssStyle.innerHTML;
+    
     try {
       await fetch(`${API_BASE}/content`, {
         method: 'POST',
@@ -1069,27 +1108,31 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify(contentData)
       });
-      alert('Content saved to database successfully!');
-      isEditingText = false;
-      adminToggleEdit.textContent = 'Enable Text Editor';
-      adminSaveContent.style.display = 'none';
-      editables.forEach(el => el.removeAttribute('contenteditable'));
-      toggleLinkEditors(false);
+      alert('Changes saved to database successfully!');
+      
+      // Exit editing mode by manually calling the toggle
+      if (isEditingMode) toggleVisualEditor();
+      
     } catch (err) {
       alert('Failed to save to database.');
       toggleLinkEditors(true); // Put them back if save failed
     }
   }
 
+  if (adminSaveChanges) {
+    adminSaveChanges.addEventListener('click', saveChanges);
+  }
+
   /* --- Admin Style Editor Logic --- */
-  let isEditingStyle = false;
   window.isMobileMode = false;
   
-  const adminToggleStyle = document.getElementById('adminToggleStyle');
   const adminToggleMobile = document.getElementById('adminToggleMobile');
   const adminStyleEditor = document.getElementById('adminStyleEditor');
-  const adminSaveStyles = document.getElementById('adminSaveStyles');
   const customCssStyle = document.getElementById('admin-custom-css');
+  const styleBgColor = document.getElementById('styleBgColor');
+  const styleSurfaceColor = document.getElementById('styleSurfaceColor');
+  const stylePrimaryColor = document.getElementById('stylePrimaryColor');
+  const styleAccentColor = document.getElementById('styleAccentColor');
   
   if (adminToggleMobile) {
     adminToggleMobile.addEventListener('change', (e) => {
@@ -1117,29 +1160,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         previewStyle.innerHTML = '';
-      }
-    });
-  }
-  
-  if (adminToggleStyle) {
-    adminToggleStyle.addEventListener('click', () => {
-      isEditingStyle = !isEditingStyle;
-      if (isEditingStyle) {
-        adminToggleStyle.textContent = 'Cancel Style Editor';
-        adminStyleEditor.style.display = 'flex';
-        adminSaveStyles.style.display = 'inline-block';
-        document.body.classList.add('style-editor-active');
-        initStylePickers();
-      } else {
-        adminToggleStyle.textContent = 'Enable Style Editor';
-        adminStyleEditor.style.display = 'none';
-        adminSaveStyles.style.display = 'none';
-        document.body.classList.remove('style-editor-active');
-        if(universalStyleInspector) universalStyleInspector.style.display = 'none';
-        if(adminHighlightBox) adminHighlightBox.style.display = 'none';
-        inspectorFrozen = false;
-        currentStyleTarget = null;
-        loadDataFromBackend(); // Revert unsaved styles
       }
     });
   }
@@ -1209,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let inspectorFrozen = false; // When true, hovering doesn't move the highlight box
 
   document.addEventListener('mousemove', (e) => {
-    if (!isEditingStyle || inspectorFrozen || !adminHighlightBox) return;
+    if (!isEditingMode || inspectorFrozen || !adminHighlightBox) return;
     
     // Ignore hover over admin panels
     if (e.target.closest('#adminPanel') || e.target.closest('#universalStyleInspector')) {
@@ -1228,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('click', (e) => {
-    if (!isEditingStyle) return;
+    if (!isEditingMode || inspectorFrozen || !adminHighlightBox) return;
     
     // Don't trigger if clicking inside admin panels
     if (e.target.closest('#adminPanel') || e.target.closest('#universalStyleInspector')) return;
@@ -1273,10 +1293,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load existing styles into new inputs if available
     usiFontWeight.value = computedStyles.fontWeight || '';
-    usiFontSize.value = computedStyles.fontSize || '';
-    usiLineHeight.value = computedStyles.lineHeight || '';
-    usiPadding.value = computedStyles.padding || '';
+    const fontFamilyEl = document.getElementById('usiFontFamily');
+    if (fontFamilyEl) {
+      let ff = computedStyles.fontFamily;
+      if (ff) {
+        // Normalise quotes
+        ff = ff.replace(/"/g, "'");
+        // Try to match exact value from options, otherwise default
+        const opts = Array.from(fontFamilyEl.options).map(o => o.value);
+        fontFamilyEl.value = opts.find(o => o === ff || ff.includes(o.split(',')[0])) || '';
+      }
+    }
     
+    // Dynamic Font Size Options
+    const isHeading = /^(H1|H2|H3|H4|H5|H6)$/.test(currentStyleTarget.tagName);
+    usiFontSize.innerHTML = `
+      <option value="">Default</option>
+      <option value="${isHeading ? '1.5rem' : '0.875rem'}">Small</option>
+      <option value="${isHeading ? '2rem' : '1rem'}">Medium</option>
+      <option value="${isHeading ? '3rem' : '1.5rem'}">Large</option>
+    `;
   }, true); // Capture Phase
 
   // Close inspector
@@ -1294,13 +1330,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { el: usiTextColor, prop: 'color' }, 
     { el: usiBorderColor, prop: 'border-color' },
     { el: usiFontWeight, prop: 'font-weight' },
-    { el: usiFontSize, prop: 'font-size' },
-    { el: usiLineHeight, prop: 'line-height' },
-    { el: usiPadding, prop: 'padding' },
-    { el: document.getElementById('usiWidth'), prop: 'width' },
-    { el: document.getElementById('usiHeight'), prop: 'height' },
-    { el: document.getElementById('usiLeft'), prop: 'left' },
-    { el: document.getElementById('usiTop'), prop: 'top' }
+    { el: document.getElementById('usiFontFamily'), prop: 'font-family' },
+    { el: usiFontSize, prop: 'font-size' }
   ].forEach(input => {
     if(input.el) {
       input.el.addEventListener('input', (e) => {
@@ -1316,41 +1347,31 @@ document.addEventListener('DOMContentLoaded', () => {
           selector = `[data-style-id="${currentStyleTarget.getAttribute('data-style-id')}"]`;
         }
 
-        let rule = '';
-        if (window.isMobileMode) {
-          rule = `@media (max-width: 768px) { ${selector} { ${input.prop}: ${e.target.value} !important; } }\n`;
-        } else {
-          rule = `${selector} { ${input.prop}: ${e.target.value} !important; }\n`;
+        let currentCss = customCssStyle.innerHTML;
+        let escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
+        // Remove old single-property blocks for this selector and property
+        let regNormal = new RegExp(escapedSelector + '\\s*\\{\\s*' + input.prop + '\\s*:[^}]+?\\}', 'g');
+        currentCss = currentCss.replace(regNormal, '');
+        
+        let regMedia = new RegExp('@media\\s*\\([^)]+\\)\\s*\\{\\s*' + escapedSelector + '\\s*\\{\\s*' + input.prop + '\\s*:[^}]+?\\}\\s*\\}', 'g');
+        currentCss = currentCss.replace(regMedia, '');
+
+        // If a new value is provided, append it
+        if (e.target.value) {
+          if (window.isMobileMode) {
+            currentCss += `@media (max-width: 768px) { ${selector} { ${input.prop}: ${e.target.value} !important; } }\n`;
+          } else {
+            currentCss += `${selector} { ${input.prop}: ${e.target.value} !important; }\n`;
+          }
         }
         
-        customCssStyle.innerHTML += rule;
+        customCssStyle.innerHTML = currentCss;
       });
     }
   });
 
-  // Save Styles
-  if (adminSaveStyles) {
-    adminSaveStyles.addEventListener('click', async () => {
-      try {
-        await fetch(`${API_BASE}/content`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionStorage.getItem('adminToken')}`
-          },
-          body: JSON.stringify({ global_custom_css: customCssStyle.innerHTML })
-        });
-        alert('Custom styles saved successfully!');
-        isEditingStyle = false;
-        adminToggleStyle.textContent = 'Enable Style Editor';
-        adminStyleEditor.style.display = 'none';
-        adminSaveStyles.style.display = 'none';
-        document.body.classList.remove('style-editor-active');
-      } catch (err) {
-        alert('Failed to save custom styles.');
-      }
-    });
-  }
+  // Styles are now saved along with text content in saveChanges
 
   function enableAdminMode() {
     if (adminPanel) adminPanel.classList.add('is-active');
@@ -1371,6 +1392,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminHeroTagAdd = document.getElementById('adminHeroTagAdd');
     if (adminHeroTagAdd) adminHeroTagAdd.style.display = 'inline-block';
     
+    // Inject Edit buttons for SELECT elements instantly accessible via admin panel
+    document.querySelectorAll('select[data-editable]').forEach(select => {
+      let btn = select.nextElementSibling;
+      if (!btn || !btn.classList.contains('admin-select-edit')) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'admin-select-edit btn btn--secondary btn--small';
+        btn.textContent = 'Edit Options';
+        btn.style.marginTop = '4px';
+        btn.onclick = async (e) => {
+          e.preventDefault();
+          const currentOptions = Array.from(select.querySelectorAll('option'))
+                                      .filter(opt => opt.value !== "")
+                                      .map(opt => opt.value)
+                                      .join(', ');
+          const newOptions = prompt(`Enter comma-separated options for ${select.id}:`, currentOptions);
+          if (newOptions !== null) {
+            const placeholder = select.querySelector('option[value=""]');
+            select.innerHTML = '';
+            if (placeholder) select.appendChild(placeholder);
+            
+            newOptions.split(',').forEach(val => {
+              const trimmed = val.trim();
+              if (trimmed) {
+                const opt = document.createElement('option');
+                opt.value = trimmed;
+                opt.textContent = trimmed;
+                select.appendChild(opt);
+              }
+            });
+            
+            // Save directly
+            try {
+              const key = select.getAttribute('data-editable');
+              await fetch(`${API_BASE}/content`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${sessionStorage.getItem('adminToken')}`
+                },
+                body: JSON.stringify({ [key]: select.innerHTML })
+              });
+            } catch (err) {
+              alert('Failed to save options.');
+            }
+          }
+        };
+        select.parentNode.insertBefore(btn, select.nextSibling);
+      }
+      btn.style.display = 'inline-block';
+    });
+    
     // Show delete buttons on dynamic cards
     document.querySelectorAll('.admin-card-del').forEach(btn => btn.style.display = 'flex');
 
@@ -1381,6 +1454,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (adminPanel) adminPanel.classList.remove('is-active');
     if (adminPhotoEdit) adminPhotoEdit.style.display = 'none';
     if (adminGalleryAdd) adminGalleryAdd.style.display = 'none';
+    
+    document.querySelectorAll('.admin-select-edit').forEach(btn => btn.style.display = 'none');
     
     // Hide Dynamic Add buttons
     const adminSubjectAdd = document.getElementById('adminSubjectAdd');
@@ -1662,8 +1737,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const delBtn = document.createElement('button');
         delBtn.className = 'admin-delete-btn admin-card-del admin-section-del';
-        delBtn.innerHTML = '× Delete Section';
-        delBtn.style.display = isAdmin && isEditingText ? 'inline-flex' : 'none';
+        // If admin mode is active AND currently editing, show delete button
+        delBtn.style.display = isAdmin && isEditingMode ? 'inline-flex' : 'none';
         delBtn.style.position = 'absolute';
         delBtn.style.top = '20px';
         delBtn.style.right = '20px';
@@ -1767,7 +1842,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       // After adding, fetch latest data and if we are editing, re-trigger editable state
       await loadDataFromBackend();
-      if (isEditingText) {
+      if (isEditingMode) {
         document.querySelectorAll('[data-editable]').forEach(el => el.setAttribute('contenteditable', 'true'));
         window.applyAdminUI();
       }

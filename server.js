@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_admin_key_123'; // In
 // Rate limiter for login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 login requests per windowMs
+  max: 50, // limit each IP to 50 login requests per windowMs
   message: { error: "Too many login attempts, please try again later" }
 });
 
