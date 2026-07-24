@@ -502,9 +502,9 @@
     <!-- Floating Text Format Toolbar -->
   <div id="textFormatToolbar" style="display:none; position:absolute; z-index:10000; background:var(--clr-surface); border:1px solid var(--clr-border); padding:6px; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.3); gap: 6px; align-items: center;">
 
-    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)"><b>B</b></button>
-    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); document.execCommand('italic', false, null)"><i>I</i></button>
-    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); document.execCommand('underline', false, null)"><u>U</u></button>
+    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); window.applyThemeIsolatedFormat('font-weight', 'bold', true)"><b>B</b></button>
+    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); window.applyThemeIsolatedFormat('font-style', 'italic', true)"><i>I</i></button>
+    <button class="btn btn--small" style="padding: 2px 6px;" onmousedown="event.preventDefault(); window.applyThemeIsolatedFormat('text-decoration', 'underline', true)"><u>U</u></button>
     <input type="color" id="textColorPicker" class="style-color-picker" style="width:24px; height:24px; vertical-align:middle; cursor:pointer;" title="Text Color" onmousedown="event.preventDefault();">
   </div>
 

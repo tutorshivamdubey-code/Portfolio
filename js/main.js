@@ -1097,41 +1097,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  window.applyThemeIsolatedFormat = function(prop, value, isToggle) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) return;
+    
+    let node = selection.anchorNode;
+    if (node.nodeType === 3) node = node.parentNode;
+    
+    const id = 'txt_' + Date.now();
+    let targetId = id;
+    
+    if (node.tagName === 'SPAN' && node.hasAttribute('data-text-id')) {
+      targetId = node.getAttribute('data-text-id');
+    } else {
+      const range = selection.getRangeAt(0);
+      const span = document.createElement('span');
+      span.setAttribute('data-text-id', id);
+      try {
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      } catch (err) {
+        document.execCommand('insertHTML', false, `<span data-text-id="${id}">${selection.toString()}</span>`);
+      }
+    }
+    
+    let currentCss = customCssStyle.innerHTML;
+    const themePrefix = currentTheme === 'dark' ? '[data-theme="dark"] ' : '[data-theme="light"] ';
+    const selector = `[data-text-id="${targetId}"]`;
+    const escapedPrefix = themePrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    const regNormal = new RegExp(escapedPrefix + '\\[' + `data-text-id="${targetId}"` + '\\]' + '\\s*\\{\\s*' + prop + '\\s*:[^}]+?\\}', 'g');
+    
+    if (isToggle && currentCss.match(regNormal)) {
+      currentCss = currentCss.replace(regNormal, '');
+    } else {
+      currentCss = currentCss.replace(regNormal, '');
+      currentCss += `\n${themePrefix}${selector} { ${prop}: ${value} !important; }\n`;
+    }
+    
+    customCssStyle.innerHTML = currentCss;
+  };
+
   if (textColorPicker) {
     textColorPicker.addEventListener('input', (e) => {
-      const selection = window.getSelection();
-      if (!selection.rangeCount || selection.isCollapsed) return;
-      
-      let node = selection.anchorNode;
-      if (node.nodeType === 3) node = node.parentNode;
-      
-      const id = 'txt_' + Date.now();
-      let targetId = id;
-      
-      if (node.tagName === 'SPAN' && node.hasAttribute('data-text-id')) {
-        targetId = node.getAttribute('data-text-id');
-      } else {
-        const range = selection.getRangeAt(0);
-        const span = document.createElement('span');
-        span.setAttribute('data-text-id', id);
-        try {
-          span.appendChild(range.extractContents());
-          range.insertNode(span);
-        } catch (err) {
-          document.execCommand('insertHTML', false, `<span data-text-id="${id}">${selection.toString()}</span>`);
-        }
-      }
-      
-      let currentCss = customCssStyle.innerHTML;
-      const themePrefix = currentTheme === 'dark' ? '[data-theme="dark"] ' : '[data-theme="light"] ';
-      const selector = `[data-text-id="${targetId}"]`;
-      
-      const escapedPrefix = themePrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regNormal = new RegExp(escapedPrefix + '\\[' + `data-text-id="${targetId}"` + '\\]' + '\\s*\\{\\s*color\\s*:[^}]+?\\}', 'g');
-      currentCss = currentCss.replace(regNormal, '');
-      
-      currentCss += `\n${themePrefix}${selector} { color: ${e.target.value} !important; }\n`;
-      customCssStyle.innerHTML = currentCss;
+      window.applyThemeIsolatedFormat('color', e.target.value, false);
     });
   }
 
